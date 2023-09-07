@@ -167,7 +167,6 @@ class CsvToDatabaseView(CustomFormView):
         form.overwrite_duplicate.data = True
         form.skip_initial_space.data = False
         form.skip_blank_lines.data = True
-        form.infer_datetime_format.data = True
         form.day_first.data = False
         form.decimal.data = "."
         form.if_exists.data = "fail"
@@ -192,6 +191,7 @@ class CsvToDatabaseView(CustomFormView):
 
         try:
             kwargs = {"dtype": json.loads(form.dtype.data)} if form.dtype.data else {}
+            print("\n\nHERE")
             df = pd.concat(
                 pd.read_csv(
                     chunksize=1000,
@@ -199,7 +199,6 @@ class CsvToDatabaseView(CustomFormView):
                     filepath_or_buffer=form.csv_file.data,
                     header=form.header.data if form.header.data else 0,
                     index_col=form.index_col.data,
-                    infer_datetime_format=form.infer_datetime_format.data,
                     dayfirst=form.day_first.data,
                     iterator=True,
                     keep_default_na=not form.null_values.data,
@@ -214,6 +213,7 @@ class CsvToDatabaseView(CustomFormView):
                     **kwargs,
                 )
             )
+            print(df)
 
             database = (
                 db.session.query(models.Database)
